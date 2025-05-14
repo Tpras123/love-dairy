@@ -117,11 +117,11 @@
 
     <script>
         // Unique username for each user, change as needed
-        const username = "You"; // Replace "You" with your actual username (for example: "Reena")
+        const username = "You"; // Replace "You" with your actual username (e.g. "Reena")
 
         // Function to display notes
         function displayNotes() {
-            // Ensure we're working with the correct data in localStorage
+            // Retrieve notes from localStorage
             const notes = JSON.parse(localStorage.getItem("notes")) || [];
             const notesContainer = document.getElementById("notesContainer");
             notesContainer.innerHTML = ''; // Clear current notes
@@ -179,6 +179,7 @@
                 replies: []
             };
 
+            // Save note to localStorage
             const notes = JSON.parse(localStorage.getItem("notes")) || [];
             notes.push(note);
             localStorage.setItem("notes", JSON.stringify(notes));
