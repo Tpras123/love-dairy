@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Love Diary</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #2d2d2d;
+            color: white;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            text-align: center;
+            color: #ff7e5f;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            background: #f4f4f4;
+            color: #333;
+        }
+        button {
+            background-color: #ff7e5f;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        button:hover {
+            background-color: #feb47b;
+        }
+        .note {
+            background-color: #333;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            color: white;
+            display: flex;
+            flex-direction: column;
+        }
+        .note h3 {
+            color: #ff7e5f;
+        }
+        .reaction-btn {
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        .reaction-btn span {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+        .reply-section {
+            margin-top: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .reply {
+            background: #444;
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 5px;
+        }
+        .uploads {
+            margin: 10px 0;
+        }
+        .uploads img {
+            max-width: 100%;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+        .uploads audio {
+            margin-top: 10px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Your Virtual Love Diary</h1>
+
+        <!-- Textarea for adding new notes -->
+        <textarea id="noteText" placeholder="Write your note..."></textarea>
+        
+        <!-- Image upload -->
+        <input type="file" id="imageUpload" accept="image/*" style="margin-bottom: 10px;">
+        
+        <!-- Song upload -->
+        <input type="file" id="songUpload" accept="audio/*" style="margin-bottom: 10px;">
+        
+        <button onclick="saveNote()">Add Note</button>
+
+        <!-- Displaying saved notes -->
+        <div id="notesContainer"></div>
+    </div>
+
+    <script>
+        // Unique username for each user, change as needed
+        const username = "You"; // Replace "You" with your actual username (for example: "Reena")
+
+        // Function to display notes
+        function displayNotes() {
+            // Ensure we're working with the correct data in localStorage
+            const notes = JSON.parse(localStorage.getItem("notes")) || [];
+            const notesContainer = document.getElementById("notesContainer");
+            notesContainer.innerHTML = ''; // Clear current notes
+
+            // Loop through the notes and display them
+            notes.forEach((note, index) => {
+                const noteElement = document.createElement("div");
+                noteElement.classList.add("note");
+                noteElement.innerHTML = `
+                    <h3>${note.date} - ${note.username}</h3>
+                    <p>${note.text}</p>
+                    ${note.image ? `<div class="uploads"><img src="${note.image}" alt="Uploaded Image"></div>` : ''}
+                    ${note.song ? `<div class="uploads"><audio controls><source src="${note.song}" type="audio/mp3"></audio></div>` : ''}
+                    <div class="reaction-btn">
+                        <span onclick="addReaction(${index}, '❤️')">❤️</span>
+                        <span onclick="addReaction(${index}, '😍')">😍</span>
+                        <span onclick="addReaction(${index}, '😂')">😂</span>
+                    </div>
+                    <div class="reactions">
+                        ${note.reactions.join(' ')}
+                    </div>
+                    <button onclick="deleteNote(${index})">Delete</button>
+                    <div class="reply-section">
+                        <h4>Replies</h4>
+                        <textarea id="replyText${index}" placeholder="Write a reply..."></textarea>
+                        <button onclick="addReply(${index})">Add Reply</button>
+                        <div class="replies">
+                            ${note.replies.map(reply => `<div class="reply"><strong>${reply.username}:</strong> ${reply.text}</div>`).join('')}
+                        </div>
+                    </div>
+                `;
+                notesContainer.appendChild(noteElement);
+            });
+        }
+
+        // Function to save a note
+        function saveNote() {
+            const noteText = document.getElementById("noteText").value;
+            const imageUpload = document.getElementById("imageUpload");
+            const songUpload = document.getElementById("songUpload");
+
+            if (!noteText) {
+                alert("Please write something before saving.");
+                return;
+            }
+
+            const noteDate = new Date().toLocaleString();
+            const note = {
+                username: username, // Current user's name (You or Reena)
+                date: noteDate,
+                text: noteText,
+                image: imageUpload.files.length > 0 ? URL.createObjectURL(imageUpload.files[0]) : null,
+                song: songUpload.files.length > 0 ? URL.createObjectURL(songUpload.files[0]) : null,
+                reactions: [],
+                replies: []
+            };
+
+            const notes = JSON.parse(localStorage.getItem("notes")) || [];
+            notes.push(note);
+            localStorage.setItem("notes", JSON.stringify(notes));
+
+            // Refresh the displayed notes
+            displayNotes();
+
+            // Clear the inputs after saving
+            document.getElementById("noteText").value = "";
+            imageUpload.value = "";
+            songUpload.value = "";
+        }
+
+        // Function to add reaction to a note
+        function addReaction(noteIndex, reaction) {
+            const notes = JSON.parse(localStorage.getItem("notes")) || [];
+            notes[noteIndex].reactions.push(reaction);
+            localStorage.setItem("notes", JSON.stringify(notes));
+            displayNotes();
+        }
+
+        // Function to add a reply to a note
+        function addReply(noteIndex) {
+            const replyText = document.getElementById(`replyText${noteIndex}`).value;
+            if (!replyText) {
+                alert("Please write a reply before submitting.");
+                return;
+            }
+
+            const notes = JSON.parse(localStorage.getItem("notes")) || [];
+            notes[noteIndex].replies.push({ username: username, text: replyText });
+            localStorage.setItem("notes", JSON.stringify(notes));
+            displayNotes();
+        }
+
+        // Function to delete a note
+        function deleteNote(noteIndex) {
+            const notes = JSON.parse(localStorage.getItem("notes")) || [];
+            notes.splice(noteIndex, 1);
+            localStorage.setItem("notes", JSON.stringify(notes));
+            displayNotes();
+        }
+
+        // Ensure the notes are displayed when the page loads
+        window.onload = function() {
+            displayNotes();
+        };
+    </script>
+</body>
+</html>
