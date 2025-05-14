@@ -6,11 +6,12 @@
     <title>Virtual Love Diary</title>
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Raleway:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
+        /* Background Animation for Romantic Feel */
         body {
             font-family: 'Raleway', sans-serif;
-            background: linear-gradient(135deg, #ffb6c1, #ff7e5f, #feb47b);
+            background: linear-gradient(135deg, #ff7e5f, #feb47b, #ffb6c1);
             background-size: 600% 600%;
-            animation: gradientAnimation 10s ease infinite;
+            animation: gradientAnimation 15s ease infinite;
             color: white;
             margin: 0;
             padding: 0;
@@ -20,35 +21,41 @@
             min-height: 100vh;
             flex-direction: column;
             overflow-x: hidden;
-            transition: background 0.5s ease;
+            transition: background 1s ease;
         }
 
+        /* Keyframe Animation for Background Gradient */
         @keyframes gradientAnimation {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
 
+        /* Container Styling */
         .container {
             width: 90%;
             max-width: 800px;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 15px;
             padding: 25px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             margin-top: 20px;
             backdrop-filter: blur(10px);
+            transition: transform 0.5s ease-in-out;
         }
 
+        /* H1 Styling for Romantic Feel */
         h1 {
             text-align: center;
             font-family: 'Great Vibes', cursive;
             color: #ff7e5f;
-            font-size: 3em;
+            font-size: 3.5em;
             margin-bottom: 20px;
             text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 2s ease-out;
         }
 
+        /* Textarea Styling */
         textarea {
             width: 100%;
             padding: 15px;
@@ -59,15 +66,16 @@
             font-size: 16px;
             border: 2px solid #ff7e5f;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, border-color 0.3s ease;
         }
 
         textarea:focus {
-            transform: scale(1.02);
+            transform: scale(1.05);
             border-color: #feb47b;
             outline: none;
         }
 
+        /* Button Styling */
         button {
             background-color: #ff7e5f;
             color: white;
@@ -78,13 +86,15 @@
             margin: 10px 0;
             width: 100%;
             font-size: 16px;
-            transition: background 0.3s ease;
+            transition: background 0.3s ease, transform 0.3s ease;
         }
 
         button:hover {
             background-color: #feb47b;
+            transform: scale(1.05);
         }
 
+        /* Note Styling */
         .note {
             background-color: rgba(255, 255, 255, 0.1);
             padding: 20px;
@@ -93,9 +103,10 @@
             color: white;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             opacity: 0;
-            animation: fadeIn 1s forwards;
+            animation: fadeInNote 1s forwards;
         }
 
+        /* Note Heading Styling */
         .note h3 {
             color: #ff7e5f;
             font-size: 1.5em;
@@ -103,6 +114,7 @@
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
         }
 
+        /* Reaction Button Styling */
         .reaction-btn {
             margin-top: 10px;
             display: flex;
@@ -120,6 +132,7 @@
             transform: scale(1.2);
         }
 
+        /* Reply Section Styling */
         .reply-section {
             margin-top: 10px;
             padding: 15px;
@@ -136,21 +149,22 @@
             font-size: 14px;
         }
 
+        /* Uploads Styling */
         .uploads img {
             max-width: 100%;
             margin-top: 15px;
             border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .uploads img:hover {
+            transform: scale(1.05);
         }
 
         .uploads audio {
             margin-top: 10px;
             width: 100%;
             border-radius: 10px;
-        }
-
-        /* Smooth Scroll */
-        html {
-            scroll-behavior: smooth;
         }
 
         /* Keyframe Animation for Fade-in */
@@ -163,7 +177,18 @@
             }
         }
 
-        /* Responsive Design */
+        @keyframes fadeInNote {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Media Queries for Responsiveness */
         @media (max-width: 768px) {
             h1 {
                 font-size: 2.5em;
@@ -221,6 +246,7 @@
                 font-size: 12px;
             }
         }
+
     </style>
 </head>
 <body>
@@ -246,6 +272,7 @@
     <script>
         const username = "You"; // Change this to "Reena" for her
 
+        // Function to display notes
         function displayNotes() {
             const notes = JSON.parse(localStorage.getItem("notes")) || [];
             const notesContainer = document.getElementById("notesContainer");
@@ -279,6 +306,7 @@
             });
         }
 
+        // Function to save a note
         function saveNote() {
             const noteText = document.getElementById("noteText").value;
             const imageUpload = document.getElementById("imageUpload");
@@ -311,6 +339,7 @@
             songUpload.value = "";
         }
 
+        // Function to add reaction to a note
         function addReaction(noteIndex, reaction) {
             const notes = JSON.parse(localStorage.getItem("notes")) || [];
             notes[noteIndex].reactions.push(reaction);
@@ -318,6 +347,7 @@
             displayNotes();
         }
 
+        // Function to add a reply to a note
         function addReply(noteIndex) {
             const replyText = document.getElementById(`replyText${noteIndex}`).value;
             if (!replyText) {
@@ -331,6 +361,7 @@
             displayNotes();
         }
 
+        // Function to delete a note
         function deleteNote(noteIndex) {
             const notes = JSON.parse(localStorage.getItem("notes")) || [];
             notes.splice(noteIndex, 1);
